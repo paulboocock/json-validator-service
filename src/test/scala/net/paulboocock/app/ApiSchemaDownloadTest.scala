@@ -28,7 +28,7 @@ class ApiSchemaDownloadTest extends ScalatraFunSuite with BeforeAndAfter {
   test("GET /schema/unknown should return status 404") {
     get("/schema/unknown") {
       status should equal (404)
-      body should equal (write(SchemaResponse("downloadSchema", "unknown", "error", Some("Not Found: Schema not found"))))
+      body should equal (write(SchemaResponse("downloadSchema", "unknown", "error", Some("Schema not found"))))
     }
   }
 }

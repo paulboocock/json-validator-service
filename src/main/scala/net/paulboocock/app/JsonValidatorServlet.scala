@@ -18,33 +18,33 @@ class JsonValidatorServlet extends ScalatraServlet with JacksonJsonSupport {
   }
 
   post("/schema/:schemaid") {
-    val schemaId = params.getOrElse("schemaid", halt(400, body = SchemaResponse("uploadSchema", "unknown", "error", Some("Bad Request: SchemaID is required"))))
+    val schemaId = params.getOrElse("schemaid", halt(400, body = SchemaResponse("uploadSchema", "unknown", "error", Some("SchemaID is required"))))
     val schema = multiParams.to[List] match {
       case List(a,_) => a._1
-      case _ => halt(400, body = SchemaResponse("uploadSchema", schemaId, "error", Some("Bad Request: JSON Schema required")))
+      case _ => halt(400, body = SchemaResponse("uploadSchema", schemaId, "error", Some("JSON Schema required")))
     }
 
     try {
       val jsonSchema = asJsonNode(parseJson(schema))
       schemaDatabase += (schemaId -> jsonSchema)
     } catch {
-      case _: JsonProcessingException => halt(400, body = SchemaResponse("uploadSchema", schemaId, "error", Some("Bad Request: Supplied JSON Schema is not valid JSON")))
+      case _: JsonProcessingException => halt(400, body = SchemaResponse("uploadSchema", schemaId, "error", Some("Invalid JSON")))
     }
 
     Created(SchemaResponse("uploadSchema", schemaId, "success"))
   }
 
   get("/schema/:schemaid") {
-    val schemaId = params.getOrElse("schemaid", halt(400, body = SchemaResponse("downloadSchema", "unknown", "error", Some("Bad Request: SchemaID is required"))))
-    Ok(schemaDatabase getOrElse(schemaId, halt(404, body = SchemaResponse("downloadSchema", schemaId, "error", Some("Not Found: Schema not found")))))
+    val schemaId = params.getOrElse("schemaid", halt(400, body = SchemaResponse("downloadSchema", "unknown", "error", Some("SchemaID is required"))))
+    Ok(schemaDatabase getOrElse(schemaId, halt(404, body = SchemaResponse("downloadSchema", schemaId, "error", Some("Schema not found")))))
   }
 
   post("/validate/:schemaid") {
-    val schemaId = params.getOrElse("schemaid", halt(400, body = SchemaResponse("validateDocument", "unknown", "error", Some("Bad Request: SchemaID is required"))))
-    val schema = schemaDatabase getOrElse(schemaId, halt(404, body = SchemaResponse("validateDocument", schemaId, "error", Some("Not Found: Schema not found"))))
+    val schemaId = params.getOrElse("schemaid", halt(400, body = SchemaResponse("validateDocument", "unknown", "error", Some("SchemaID is required"))))
+    val schema = schemaDatabase getOrElse(schemaId, halt(404, body = SchemaResponse("validateDocument", schemaId, "error", Some("Schema not found"))))
     val jsonToValidate = multiParams.to[List] match {
       case List(a,_) => a._1
-      case _ => halt(400, body = SchemaResponse("validateDocument", schemaId, "error", Some("Bad Request: JSON file required")))
+      case _ => halt(400, body = SchemaResponse("validateDocument", schemaId, "error", Some("JSON file required")))
     }
 
     try {
@@ -64,7 +64,7 @@ class JsonValidatorServlet extends ScalatraServlet with JacksonJsonSupport {
         Ok(SchemaResponse("validateDocument", schemaId, "error", messages.hasNext() match { case true => Some(messages.next().getMessage) case false => None }))
       }
     } catch {
-      case _: JsonProcessingException => halt(400, body = SchemaResponse("validateDocument", schemaId, "error", Some("Bad Request: Supplied JSON is not valid")))
+      case _: JsonProcessingException => halt(400, body = SchemaResponse("validateDocument", schemaId, "error", Some("Invalid JSON")))
     }
   }
 

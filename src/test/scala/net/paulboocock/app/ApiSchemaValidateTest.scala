@@ -42,7 +42,7 @@ class ApiSchemaValidateTest extends ScalatraFunSuite with BeforeAndAfter {
   test("POST /validate/config-schema with invalid JSON should return status 400") {
     post("/validate/config-schema", Utils.loadFile("config-invalid.json") -> "") {
       status should equal (400)
-      body should equal (write(SchemaResponse("validateDocument", "config-schema", "error", Some("Bad Request: Supplied JSON is not valid"))))
+      body should equal (write(SchemaResponse("validateDocument", "config-schema", "error", Some("Invalid JSON"))))
     }
   }
 }
