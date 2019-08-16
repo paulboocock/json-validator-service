@@ -60,10 +60,11 @@ class JsonValidatorServlet extends ScalatraServlet with JacksonJsonSupport {
       if (report.isSuccess) {
         Ok(SchemaResponse("validateDocument", schemaId, "success"))
       } else {
-        Ok(SchemaResponse("validateDocument", schemaId, "error", Option(report.toString)))
+        val messages = report.iterator()
+        Ok(SchemaResponse("validateDocument", schemaId, "error", messages.hasNext() match { case true => Some(messages.next().getMessage) case false => None }))
       }
     } catch {
-      case _: JsonProcessingException => halt(400, body = SchemaResponse("uploadSchema", schemaId, "error", Some("Bad Request: Supplied JSON is not valid")))
+      case _: JsonProcessingException => halt(400, body = SchemaResponse("validateDocument", schemaId, "error", Some("Bad Request: Supplied JSON is not valid")))
     }
   }
 
