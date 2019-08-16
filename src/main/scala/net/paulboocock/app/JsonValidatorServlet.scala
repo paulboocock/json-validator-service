@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException
 import com.fasterxml.jackson.databind.JsonNode
 import org.json4s.jackson.parseJson
 import org.json4s.{DefaultFormats, Formats}
+import com.github.fge.jsonschema.main.JsonSchemaFactory
 import org.scalatra._
 import org.scalatra.json._
 
@@ -46,9 +47,17 @@ class JsonValidatorServlet extends ScalatraServlet with JacksonJsonSupport {
     }
 
     try {
-      val json = parseJson(jsonToValidate)
+      val json = asJsonNode(parseJson(jsonToValidate))
 
-      Ok(SchemaResponse("validateDocument", schemaId, "success"))
+      val factory = JsonSchemaFactory.byDefault()
+      val jsonSchema = factory.getJsonSchema(schema)
+      val report = jsonSchema.validate(json)
+
+      if (report.isSuccess) {
+        Ok(SchemaResponse("validateDocument", schemaId, "success"))
+      } else {
+        Ok(SchemaResponse("validateDocument", schemaId, "error", Option(report.toString)))
+      }
     } catch {
       case _: JsonProcessingException => halt(400, body = SchemaResponse("uploadSchema", schemaId, "error", Some("Bad Request: Supplied JSON is not valid")))
     }
