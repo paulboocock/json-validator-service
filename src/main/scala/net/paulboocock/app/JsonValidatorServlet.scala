@@ -2,6 +2,7 @@ package net.paulboocock.app
 
 import com.fasterxml.jackson.core.JsonProcessingException
 import com.fasterxml.jackson.databind.JsonNode
+import org.json4s.JsonAST.{JField, JNull}
 import org.json4s.jackson.parseJson
 import org.json4s.{DefaultFormats, Formats}
 import com.github.fge.jsonschema.main.JsonSchemaFactory
@@ -47,11 +48,14 @@ class JsonValidatorServlet extends ScalatraServlet with JacksonJsonSupport {
     }
 
     try {
-      val json = asJsonNode(parseJson(jsonToValidate))
-
+      val json = parseJson(jsonToValidate)
+      val jsonCleansed = json removeField {
+        case JField(_, JNull) => true
+        case _ => false
+      }
       val factory = JsonSchemaFactory.byDefault()
       val jsonSchema = factory.getJsonSchema(schema)
-      val report = jsonSchema.validate(json)
+      val report = jsonSchema.validate(asJsonNode(jsonCleansed))
 
       if (report.isSuccess) {
         Ok(SchemaResponse("validateDocument", schemaId, "success"))
