@@ -1,23 +1,22 @@
 package net.paulboocock.app
 
 import com.fasterxml.jackson.core.JsonProcessingException
-import com.fasterxml.jackson.databind.JsonNode
+import com.github.fge.jsonschema.main.JsonSchemaFactory
+import com.redis._
 import org.json4s.JsonAST.{JField, JNull}
 import org.json4s.jackson.parseJson
 import org.json4s.{DefaultFormats, Formats}
-import com.github.fge.jsonschema.main.JsonSchemaFactory
 import org.scalatra._
 import org.scalatra.json._
 
 class JsonValidatorServlet extends ScalatraServlet with JacksonJsonSupport {
-
-  var schemaDatabase:Map[String, JsonNode] = Map()
 
   before() {
     contentType = formats("json")
   }
 
   post("/schema/:schemaid") {
+    val redisClient = new RedisClient("localhost", 6379)
     val schemaId = params.getOrElse("schemaid", halt(400, body = SchemaResponse("uploadSchema", "unknown", "error", Some("SchemaID is required"))))
     val schema = multiParams.to[List] match {
       case List(a,_) => a._1
@@ -26,7 +25,7 @@ class JsonValidatorServlet extends ScalatraServlet with JacksonJsonSupport {
 
     try {
       val jsonSchema = asJsonNode(parseJson(schema))
-      schemaDatabase += (schemaId -> jsonSchema)
+      redisClient.set(schemaId, jsonSchema)
     } catch {
       case _: JsonProcessingException => halt(400, body = SchemaResponse("uploadSchema", schemaId, "error", Some("Invalid JSON")))
     }
@@ -35,13 +34,15 @@ class JsonValidatorServlet extends ScalatraServlet with JacksonJsonSupport {
   }
 
   get("/schema/:schemaid") {
+    val redisClient = new RedisClient("localhost", 6379)
     val schemaId = params.getOrElse("schemaid", halt(400, body = SchemaResponse("downloadSchema", "unknown", "error", Some("SchemaID is required"))))
-    Ok(schemaDatabase getOrElse(schemaId, halt(404, body = SchemaResponse("downloadSchema", schemaId, "error", Some("Schema not found")))))
+    Ok(redisClient.get[String](schemaId) getOrElse halt(404, body = SchemaResponse("downloadSchema", schemaId, "error", Some("Schema not found"))))
   }
 
   post("/validate/:schemaid") {
+    val redisClient = new RedisClient("localhost", 6379)
     val schemaId = params.getOrElse("schemaid", halt(400, body = SchemaResponse("validateDocument", "unknown", "error", Some("SchemaID is required"))))
-    val schema = schemaDatabase getOrElse(schemaId, halt(404, body = SchemaResponse("validateDocument", schemaId, "error", Some("Schema not found"))))
+    val schema = redisClient.get[String](schemaId) getOrElse halt(404, body = SchemaResponse("downloadSchema", schemaId, "error", Some("Schema not found")))
     val jsonToValidate = multiParams.to[List] match {
       case List(a,_) => a._1
       case _ => halt(400, body = SchemaResponse("validateDocument", schemaId, "error", Some("JSON file required")))
@@ -54,7 +55,7 @@ class JsonValidatorServlet extends ScalatraServlet with JacksonJsonSupport {
         case _ => false
       }
       val factory = JsonSchemaFactory.byDefault()
-      val jsonSchema = factory.getJsonSchema(schema)
+      val jsonSchema = factory.getJsonSchema(asJsonNode(parseJson(schema)))
       val report = jsonSchema.validate(asJsonNode(jsonCleansed))
 
       if (report.isSuccess) {

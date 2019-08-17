@@ -18,7 +18,8 @@ libraryDependencies ++= Seq(
   "javax.servlet" % "javax.servlet-api" % "3.1.0" % "provided",
   "org.scalatra" %% "scalatra-json" % ScalatraVersion,
   "org.json4s"   %% "json4s-jackson" % "3.5.2",
-  "com.github.java-json-tools" % "json-schema-validator" % "2.2.10"
+  "com.github.java-json-tools" % "json-schema-validator" % "2.2.10",
+  "net.debasishg" %% "redisclient" % "3.10"
 )
 
 enablePlugins(ScalatraPlugin)
