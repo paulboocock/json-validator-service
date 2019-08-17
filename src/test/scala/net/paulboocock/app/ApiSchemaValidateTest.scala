@@ -32,10 +32,17 @@ class ApiSchemaValidateTest extends ScalatraFunSuite with BeforeAndAfter {
     }
   }
 
-  test("POST /validate/config-schema with non-compliant JSON should return status 400") {
-    post("/validate/config-schema", Utils.loadFile("config-non-compliant.json") -> "") {
+  test("POST /validate/config-schema with JSON that has field with wrong type should return status 400") {
+    post("/validate/config-schema", Utils.loadFile("config-wrong-type.json") -> "") {
       status should equal (200)
       body should equal (write(SchemaResponse("validateDocument", "config-schema", "error", Some("instance type (integer) does not match any allowed primitive type (allowed: [\"string\"])"))))
+    }
+  }
+
+  test("POST /validate/config-schema with JSON that has missing field should return status 400") {
+    post("/validate/config-schema", Utils.loadFile("config-missing-required.json") -> "") {
+      status should equal (200)
+      body should equal (write(SchemaResponse("validateDocument", "config-schema", "error", Some("object has missing required properties ([\"destination\"])"))))
     }
   }
 

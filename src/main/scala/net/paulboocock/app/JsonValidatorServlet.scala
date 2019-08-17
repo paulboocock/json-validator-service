@@ -62,7 +62,7 @@ class JsonValidatorServlet extends ScalatraServlet with JacksonJsonSupport {
         Ok(SchemaResponse("validateDocument", schemaId, "success"))
       } else {
         val messages = report.iterator()
-        Ok(SchemaResponse("validateDocument", schemaId, "error", messages.hasNext() match { case true => Some(messages.next().getMessage) case false => None }))
+        Ok(SchemaResponse("validateDocument", schemaId, "error", messages.hasNext match { case true => Some(messages.next().getMessage) case false => None }))
       }
     } catch {
       case _: JsonProcessingException => halt(400, body = SchemaResponse("validateDocument", schemaId, "error", Some("Invalid JSON")))
