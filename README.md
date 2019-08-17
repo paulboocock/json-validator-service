@@ -4,6 +4,11 @@
 
 ```sh
 $ cd json-validator-service
+$ docker-compose up
+```
+
+```sh
+$ cd json-validator-service
 $ sbt
 > jetty:start
 > browse

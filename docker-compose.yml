@@ -1,0 +1,22 @@
+version: '3'
+services:
+  redis:
+    image: "redis:5.0"
+    volumes:
+      - ./redis-data:/data
+    ports:
+      - "6379:6379"
+    entrypoint: redis-server --appendonly yes
+  # api:
+  #   image: ""
+  #   working_dir: /app
+  #   command: sbt run
+  #   ports:
+  #    - "80:8080" # opens the port so API can be hit from host machine
+  #   volumes:
+  #    - ./src:/src
+  #   environment:
+  #     REDIS_HOSTNAME: "redis"
+  #     REDIS_PORT: 6379
+  #   depends_on:
+  #     - redis
