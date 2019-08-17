@@ -1,14 +1,15 @@
-package net.paulboocock.app
+package net.paulboocock.app.api.controllers.schema
 
+import net.paulboocock.app.Utils
+import org.json4s.jackson.Serialization.write
 import org.json4s.{DefaultFormats, Formats}
 import org.scalatra.test.scalatest._
-import org.json4s.jackson.Serialization.write
 
-class ApiSchemaUploadTest extends ScalatraFunSuite {
+class UploadSchemaControllerTest extends ScalatraFunSuite {
 
   implicit lazy val jsonFormats: Formats = DefaultFormats
 
-  addServlet(classOf[JsonValidatorServlet], "/*")
+  addServlet(classOf[SchemaController], "/schema/*")
 
   test("POST /schema/config-schema with a valid JSON Schema should return status 201") {
     post("/schema/config-schema", Utils.loadFile("config-schema.json") -> "") {

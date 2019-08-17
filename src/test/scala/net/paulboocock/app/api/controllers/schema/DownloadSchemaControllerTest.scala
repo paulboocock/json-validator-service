@@ -1,18 +1,19 @@
-package net.paulboocock.app
+package net.paulboocock.app.api.controllers.schema
 
+import net.paulboocock.app.Utils
 import org.json4s.jackson.Serialization.write
+import org.json4s.jackson.parseJson
 import org.json4s.{DefaultFormats, Formats}
 import org.scalatest.BeforeAndAfter
 import org.scalatra.test.scalatest._
-import org.json4s.jackson.parseJson
 
-class ApiSchemaDownloadTest extends ScalatraFunSuite with BeforeAndAfter {
+class DownloadSchemaControllerTest extends ScalatraFunSuite with BeforeAndAfter {
 
   implicit lazy val jsonFormats: Formats = DefaultFormats
 
   val configSchema: String = Utils.loadFile("config-schema.json")
 
-  addServlet(classOf[JsonValidatorServlet], "/*")
+  addServlet(classOf[SchemaController], "/schema/*")
 
   before {
     post("/schema/config-schema", configSchema -> "")()
