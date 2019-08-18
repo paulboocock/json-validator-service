@@ -68,5 +68,5 @@ jrebel.lic
 # paulp script
 /.lib/
 
-# redis dara
-/redis-data/
+# redis data
+/docker/redis-data/

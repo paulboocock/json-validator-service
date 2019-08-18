@@ -14,7 +14,7 @@ class SchemaController extends ScalatraServlet with JacksonJsonSupport {
 
   before() {
     contentType = formats("json")
-    schemaStorage = new JsonStorageRepository(new RedisClient("localhost", 6379))
+    schemaStorage = new JsonStorageRepository(new RedisClient("redis", 6379))
   }
 
   post("/:schemaid") {

@@ -22,4 +22,12 @@ libraryDependencies ++= Seq(
   "net.debasishg" %% "redisclient" % "3.10"
 )
 
+mainClass in Compile := Some("net.paulboocock.app.JettyEmbedded")
+
+mappings in Docker += file("src/main/webapp/WEB-INF/web.xml") -> "opt/docker/src/main/webapp/WEB-INF/web.xml"
+dockerExposedPorts ++= Seq(8080)
+
 enablePlugins(ScalatraPlugin)
+enablePlugins(JavaAppPackaging, DockerComposePlugin)
+
+dockerImageCreationTask := (publishLocal in Docker).value
