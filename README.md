@@ -5,9 +5,9 @@
 $ cd json-validator-service
 $ sbt dockerComposeUp
 ```
-Navigate to http://localhost:8080/ in your browser.
+API will now be running at http://localhost/
 
-### Stop Docker Containers
+#### Stop Docker Containers ####
 ```sh
 $ sbt dockerComposeStop
 ```
@@ -17,8 +17,11 @@ $ sbt dockerComposeStop
 $ cd json-validator-service
 $ sbt
 > dockerComposeUp
-> browse
+```
+API will now be running at http://localhost/
+
+#### Stop Docker Containers ####
+```sh
+$ sbt
 > dockerComposeStop
 ```
-
-If `browse` doesn't launch your browser, manually open [http://localhost:8080/](http://localhost:8080/) in your browser.

@@ -10,7 +10,7 @@ services:
   json-validator-service:
     image: json-validator-service:0.1.0
     ports:
-    - "8080:8080" # opens the port so API can be hit from host machine
+    - "80:8080" # opens the port so API can be hit from host machine
     - "5005:5005"
     environment:
      JAVA_TOOL_OPTIONS: -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005
