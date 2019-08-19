@@ -55,5 +55,9 @@ class SchemaController(jsonSchemaService: JsonSchemaService) extends ScalatraSer
     }
   }
 
+  notFound {
+    SchemaResponse("notFound", "unknown", "error")
+  }
+
   protected implicit lazy val jsonFormats: Formats = DefaultFormats
 }

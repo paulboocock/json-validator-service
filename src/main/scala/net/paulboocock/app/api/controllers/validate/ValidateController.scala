@@ -65,5 +65,9 @@ class ValidateController(jsonSchemaService: JsonSchemaService) extends ScalatraS
     }
   }
 
+  notFound {
+    ValidateResponse("notFound", "unknown", "error")
+  }
+
   protected implicit lazy val jsonFormats: Formats = DefaultFormats
 }
