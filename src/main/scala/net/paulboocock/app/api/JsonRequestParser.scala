@@ -1,7 +1,5 @@
 package net.paulboocock.app.api
 
-import com.fasterxml.jackson.core.JsonProcessingException
-import org.json4s.jackson.JsonMethods.parse
 import org.scalatra.Params
 
 object JsonRequestParser {

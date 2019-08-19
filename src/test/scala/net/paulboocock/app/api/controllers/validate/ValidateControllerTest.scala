@@ -3,22 +3,29 @@ package net.paulboocock.app.api.controllers.validate
 import net.paulboocock.app.Utils
 import net.paulboocock.app.api.controllers.schema.{SchemaController, SchemaResponse}
 import net.paulboocock.app.core.InMemorySchemaService
+import org.json4s.jackson.JsonMethods
 import org.json4s.jackson.Serialization.write
 import org.json4s.{DefaultFormats, Formats}
 import org.scalatest.BeforeAndAfter
 import org.scalatra.test.scalatest._
 
-class ValidateControllerTest extends ScalatraFunSuite with BeforeAndAfter {
+class ValidateControllerTest extends ScalatraFunSuite with BeforeAndAfter with JsonMethods {
 
   implicit lazy val jsonFormats: Formats = DefaultFormats
 
   val configSchema: String = Utils.loadFile("config-schema.json")
 
-  addServlet(new SchemaController(InMemorySchemaService), "/schema/*")
   addServlet(new ValidateController(InMemorySchemaService), "/validate/*")
 
   before {
-    post("/schema/config-schema", configSchema -> "")()
+    InMemorySchemaService.addSchema("config-schema", parse(configSchema))
+  }
+
+  test("POST /validate/config-schema with no JSON should return status 400") {
+    post("/validate/config-schema", Seq.empty, Seq.empty) {
+      status should equal (400)
+      body should equal (write(SchemaResponse("validateDocument", "config-schema", "error", Some("JSON file required"))))
+    }
   }
 
   test("POST /validate/config-schema with compliant JSON should return status 200") {
