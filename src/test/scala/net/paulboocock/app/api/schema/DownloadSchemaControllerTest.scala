@@ -1,6 +1,8 @@
-package net.paulboocock.app.api.controllers.schema
+package net.paulboocock.app.api.schema
 
 import net.paulboocock.app.Utils
+import net.paulboocock.app.api.response.{CustomFormats, Status}
+import net.paulboocock.app.api.response.error.{ErrorCode, ErrorResponse}
 import net.paulboocock.app.core.InMemorySchemaService
 import org.json4s.jackson.Serialization.write
 import org.json4s.jackson.parseJson
@@ -8,9 +10,7 @@ import org.json4s.{DefaultFormats, Formats}
 import org.scalatest.BeforeAndAfter
 import org.scalatra.test.scalatest._
 
-class DownloadSchemaControllerTest extends ScalatraFunSuite with BeforeAndAfter {
-
-  implicit lazy val jsonFormats: Formats = DefaultFormats
+class DownloadSchemaControllerTest extends ScalatraFunSuite with BeforeAndAfter with CustomFormats {
 
   val configSchema: String = Utils.loadFile("config-schema.json")
 
@@ -28,9 +28,9 @@ class DownloadSchemaControllerTest extends ScalatraFunSuite with BeforeAndAfter 
   }
 
   test("GET /schema/unknown should return status 404") {
-    get("/schema/unknown") {
+    get("/schema/missing") {
       status should equal (404)
-      body should equal (write(SchemaResponse("downloadSchema", "unknown", "error", Some("Schema not found"))))
+      body should equal (write(SchemaResponse("downloadSchema", "missing", Status.ERROR, Some("Schema not found"))))
     }
   }
 }

@@ -1,18 +1,27 @@
-package net.paulboocock.app.api.controllers.validate
+package net.paulboocock.app.api.validate
 
 import com.fasterxml.jackson.core.JsonProcessingException
 import com.github.fge.jsonschema.main.JsonSchemaFactory
-import net.paulboocock.app.api.{JsonRequestParams, JsonRequestParser}
+import net.paulboocock.app.api.request.{JsonRequestParams, JsonRequestParser}
+import net.paulboocock.app.api.response.error.{ErrorCode, ErrorResponse}
+import net.paulboocock.app.api.response.{CustomFormats, Status}
 import net.paulboocock.app.core.JsonSchemaService
 import org.json4s.JsonAST.{JField, JNull}
-import org.json4s.{DefaultFormats, Formats}
 import org.scalatra._
 import org.scalatra.json._
 
-class ValidateController(jsonSchemaService: JsonSchemaService) extends ScalatraServlet with JacksonJsonSupport {
+class ValidateController(jsonSchemaService: JsonSchemaService) extends ScalatraServlet with JacksonJsonSupport with CustomFormats {
 
   before() {
     contentType = formats("json")
+  }
+
+  notFound {
+    ErrorResponse("notFound", Some("Route not found"), ErrorCode.NOT_FOUND)
+  }
+
+  get() {
+    halt(404, body = ErrorResponse("notFound", Some("Route not found"), ErrorCode.NOT_FOUND))
   }
 
   post("/:schemaid") {
@@ -24,17 +33,17 @@ class ValidateController(jsonSchemaService: JsonSchemaService) extends ScalatraS
           schemaId,
           jsonSchemaService.getSchema(schemaId) getOrElse halt(
             404,
-            body = ValidateResponse("validateDocument", schemaId, "error", Some("Schema not found"))
+            body = ValidateResponse("validateDocument", schemaId, Status.ERROR, Some("Schema not found"))
           ),
           json
         )
       case JsonRequestParams(None, _) => halt(
         400,
-        body = ValidateResponse("validateDocument", "unknown", "error", Some("SchemaID is required"))
+        body = ErrorResponse("validateDocument", Some("SchemaID is required"), ErrorCode.SCHEMA_ID_REQUIRED)
       )
       case JsonRequestParams(Some(schemaId), None) => halt(
         400,
-        body = ValidateResponse("validateDocument", schemaId, "error", Some("JSON file required"))
+        body = ValidateResponse("validateDocument", schemaId, Status.ERROR, Some("JSON file required"))
       )
     }
 
@@ -46,7 +55,7 @@ class ValidateController(jsonSchemaService: JsonSchemaService) extends ScalatraS
     } catch {
       case _: JsonProcessingException => halt(
         400,
-        body = ValidateResponse("validateDocument", schemaId, "error", Some("Invalid JSON"))
+        body = ValidateResponse("validateDocument", schemaId, Status.ERROR, Some("Invalid JSON"))
       )
     }
 
@@ -55,19 +64,13 @@ class ValidateController(jsonSchemaService: JsonSchemaService) extends ScalatraS
     val report = jsonSchema.validate(asJsonNode(jsonCleansed))
 
     if (report.isSuccess) {
-      Ok(ValidateResponse("validateDocument", schemaId, "success"))
+      Ok(ValidateResponse("validateDocument", schemaId))
     } else {
       val messages = report.iterator()
       Ok(ValidateResponse(
-        "validateDocument", schemaId, "error",
-        messages.hasNext match { case true => Some(messages.next().getMessage) case false => None }
+        "validateDocument", schemaId, Status.ERROR,
+        (messages.hasNext match { case true => Some(messages.next().getMessage) case false => None })
       ))
     }
   }
-
-  notFound {
-    ValidateResponse("notFound", "unknown", "error")
-  }
-
-  protected implicit lazy val jsonFormats: Formats = DefaultFormats
 }
