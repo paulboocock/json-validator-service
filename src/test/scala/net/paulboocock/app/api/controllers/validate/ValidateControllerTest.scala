@@ -2,6 +2,7 @@ package net.paulboocock.app.api.controllers.validate
 
 import net.paulboocock.app.Utils
 import net.paulboocock.app.api.controllers.schema.{SchemaController, SchemaResponse}
+import net.paulboocock.app.core.InMemorySchemaService
 import org.json4s.jackson.Serialization.write
 import org.json4s.{DefaultFormats, Formats}
 import org.scalatest.BeforeAndAfter
@@ -13,8 +14,8 @@ class ValidateControllerTest extends ScalatraFunSuite with BeforeAndAfter {
 
   val configSchema: String = Utils.loadFile("config-schema.json")
 
-  addServlet(classOf[SchemaController], "/schema/*")
-  addServlet(classOf[ValidateController], "/validate/*")
+  addServlet(new SchemaController(InMemorySchemaService), "/schema/*")
+  addServlet(new ValidateController(InMemorySchemaService), "/validate/*")
 
   before {
     post("/schema/config-schema", configSchema -> "")()

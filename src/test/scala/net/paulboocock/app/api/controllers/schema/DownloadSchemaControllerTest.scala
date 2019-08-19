@@ -1,6 +1,7 @@
 package net.paulboocock.app.api.controllers.schema
 
 import net.paulboocock.app.Utils
+import net.paulboocock.app.core.InMemorySchemaService
 import org.json4s.jackson.Serialization.write
 import org.json4s.jackson.parseJson
 import org.json4s.{DefaultFormats, Formats}
@@ -13,7 +14,7 @@ class DownloadSchemaControllerTest extends ScalatraFunSuite with BeforeAndAfter 
 
   val configSchema: String = Utils.loadFile("config-schema.json")
 
-  addServlet(classOf[SchemaController], "/schema/*")
+  addServlet(new SchemaController(InMemorySchemaService), "/schema/*")
 
   before {
     post("/schema/config-schema", configSchema -> "")()

@@ -2,21 +2,17 @@ package net.paulboocock.app.api.controllers.validate
 
 import com.fasterxml.jackson.core.JsonProcessingException
 import com.github.fge.jsonschema.main.JsonSchemaFactory
-import com.redis._
 import net.paulboocock.app.api.{JsonRequestParams, JsonRequestParser}
-import net.paulboocock.app.data.JsonStorageRepository
-import org.json4s.JsonAST.{JField, JNull, JValue}
+import net.paulboocock.app.core.JsonSchemaService
+import org.json4s.JsonAST.{JField, JNull}
 import org.json4s.{DefaultFormats, Formats}
 import org.scalatra._
 import org.scalatra.json._
 
-class ValidateController extends ScalatraServlet with JacksonJsonSupport {
-
-  var schemaStorage: JsonStorageRepository = _ //TODO: Move Repository out of Controller
+class ValidateController(jsonSchemaService: JsonSchemaService) extends ScalatraServlet with JacksonJsonSupport {
 
   before() {
     contentType = formats("json")
-    schemaStorage = new JsonStorageRepository(new RedisClient("redis", 6379))
   }
 
   post("/:schemaid") {
@@ -26,7 +22,7 @@ class ValidateController extends ScalatraServlet with JacksonJsonSupport {
       case JsonRequestParams(Some(schemaId), Some(json)) =>
         (
           schemaId,
-          schemaStorage.get(schemaId) getOrElse halt(
+          jsonSchemaService.getSchema(schemaId) getOrElse halt(
             404,
             body = ValidateResponse("validateDocument", schemaId, "error", Some("Schema not found"))
           ),
