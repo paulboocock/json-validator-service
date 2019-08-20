@@ -2,11 +2,12 @@ package net.paulboocock.app.api.validate
 
 import com.fasterxml.jackson.core.JsonProcessingException
 import com.github.fge.jsonschema.main.JsonSchemaFactory
-import net.paulboocock.app.api.request.{JsonRequestParams, JsonRequestParser}
-import net.paulboocock.app.api.response.error.{ErrorCode, ErrorResponse}
-import net.paulboocock.app.api.response.{CustomFormats, Status}
-import net.paulboocock.app.core.JsonSchemaService
-import org.json4s.JsonAST.{JField, JNull}
+import net.paulboocock.app.api.utils.request.{JsonRequestParams, JsonRequestParser}
+import net.paulboocock.app.api.utils.response.error.{ErrorCode, ErrorResponse}
+import net.paulboocock.app.api.utils.response.{CustomFormats, Status}
+import net.paulboocock.app.core.schema.JsonSchemaService
+import net.paulboocock.app.core.utils.JsonUtils
+import net.paulboocock.app.core.validate.JsonSchemaJsonValidateSchema
 import org.scalatra._
 import org.scalatra.json._
 
@@ -48,10 +49,7 @@ class ValidateController(jsonSchemaService: JsonSchemaService) extends ScalatraS
     }
 
     val jsonCleansed = try {
-      parse(json) removeField {
-        case JField(_, JNull) => true
-        case _ => false
-      }
+      JsonUtils.RemoveNullFields(parse(json))
     } catch {
       case _: JsonProcessingException => halt(
         400,
@@ -59,18 +57,12 @@ class ValidateController(jsonSchemaService: JsonSchemaService) extends ScalatraS
       )
     }
 
-    val factory = JsonSchemaFactory.byDefault()
-    val jsonSchema = factory.getJsonSchema(asJsonNode(schema))
-    val report = jsonSchema.validate(asJsonNode(jsonCleansed))
+    val report = JsonSchemaJsonValidateSchema.Validate(schema, jsonCleansed)
 
     if (report.isSuccess) {
       Ok(ValidateResponse("validateDocument", schemaId))
     } else {
-      val messages = report.iterator()
-      Ok(ValidateResponse(
-        "validateDocument", schemaId, Status.ERROR,
-        (messages.hasNext match { case true => Some(messages.next().getMessage) case false => None })
-      ))
+      Ok(ValidateResponse("validateDocument", schemaId, Status.ERROR, Some(report.message)))
     }
   }
 }

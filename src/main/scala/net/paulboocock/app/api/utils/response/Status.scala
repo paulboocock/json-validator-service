@@ -1,4 +1,4 @@
-package net.paulboocock.app.api.response
+package net.paulboocock.app.api.utils.response
 
 object Status extends Enumeration {
   type Status = Value

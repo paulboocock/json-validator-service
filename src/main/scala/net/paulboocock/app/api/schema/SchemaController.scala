@@ -1,10 +1,10 @@
 package net.paulboocock.app.api.schema
 
 import com.fasterxml.jackson.core.JsonProcessingException
-import net.paulboocock.app.api.request.{JsonRequestParams, JsonRequestParser}
-import net.paulboocock.app.api.response.error.{ErrorCode, ErrorResponse}
-import net.paulboocock.app.api.response.{CustomFormats, Status}
-import net.paulboocock.app.core.JsonSchemaService
+import net.paulboocock.app.api.utils.request.{JsonRequestParams, JsonRequestParser}
+import net.paulboocock.app.api.utils.response.error.{ErrorCode, ErrorResponse}
+import net.paulboocock.app.api.utils.response.{CustomFormats, Status}
+import net.paulboocock.app.core.schema.JsonSchemaService
 import org.scalatra._
 import org.scalatra.json.JacksonJsonSupport
 

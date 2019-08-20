@@ -1,7 +1,7 @@
 package net.paulboocock.app.api.schema
 
 import net.paulboocock.app.Utils
-import net.paulboocock.app.api.response.{CustomFormats, Status}
+import net.paulboocock.app.api.utils.response.{CustomFormats, Status}
 import net.paulboocock.app.core.InMemorySchemaService
 import org.json4s.jackson.Serialization.write
 import org.scalatra.test.scalatest._

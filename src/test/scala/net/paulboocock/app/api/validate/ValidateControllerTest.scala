@@ -1,7 +1,7 @@
 package net.paulboocock.app.api.validate
 
 import net.paulboocock.app.Utils
-import net.paulboocock.app.api.response.{CustomFormats, Status}
+import net.paulboocock.app.api.utils.response.{CustomFormats, Status}
 import net.paulboocock.app.api.schema.{SchemaController, SchemaResponse}
 import net.paulboocock.app.core.InMemorySchemaService
 import org.json4s.jackson.JsonMethods

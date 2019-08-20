@@ -1,5 +1,6 @@
 package net.paulboocock.app.core
 
+import net.paulboocock.app.core.schema.JsonSchemaService
 import net.paulboocock.app.data.{InMemorySchemaStorageRepository, KeyValueRepository}
 import org.json4s.JsonAST.JValue
 

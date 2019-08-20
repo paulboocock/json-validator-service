@@ -1,7 +1,7 @@
 package net.paulboocock.app.api.default
 
-import net.paulboocock.app.api.response.CustomFormats
-import net.paulboocock.app.api.response.error.{ErrorCode, ErrorResponse}
+import net.paulboocock.app.api.utils.response.CustomFormats
+import net.paulboocock.app.api.utils.response.error.{ErrorCode, ErrorResponse}
 import org.scalatra.ScalatraServlet
 import org.scalatra.json.JacksonJsonSupport
 

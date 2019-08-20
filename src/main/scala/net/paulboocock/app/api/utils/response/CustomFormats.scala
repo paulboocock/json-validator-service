@@ -1,6 +1,6 @@
-package net.paulboocock.app.api.response
+package net.paulboocock.app.api.utils.response
 
-import net.paulboocock.app.api.response.error.ErrorCode
+import net.paulboocock.app.api.utils.response.error.ErrorCode
 import org.json4s.ext.{EnumNameSerializer, EnumSerializer}
 import org.json4s.{DefaultFormats, Formats}
 

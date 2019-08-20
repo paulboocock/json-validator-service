@@ -1,4 +1,4 @@
-package net.paulboocock.app.api.request
+package net.paulboocock.app.api.utils.request
 
 import org.scalatra.Params
 
