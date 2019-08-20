@@ -49,6 +49,7 @@ $ docker-compose -f docker/docker-compose.yml up -d redis
 $ sbt
 > ~;jetty:stop;jetty:start
 ```
+API will now be running at http://localhost:8080/
 
 #### Stop Docker Containers ####
 ```sh
